@@ -19,83 +19,100 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Container(
-            width: screeWidth,
-            height: screeWidth * 0.6,
-            decoration: const BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(12),
-                bottomRight: Radius.circular(12),
-              ),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 12.0,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Container(
+              width: screeWidth,
+              height: screeWidth * 0.6,
+              decoration: const BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
                 ),
-                Stack(
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage("images/sam.jpg"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 12.0,
+                  ),
+                  Stack(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: Icon(Icons.camera_alt_rounded,
-                              color: Colors.black),
-                          onPressed: () {
-                            // Add functionality to edit the profile image
-                            // For example, show a dialog to pick a new image.
-                          },
+                          image: DecorationImage(
+                            image: AssetImage("images/sam.jpg"),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 12.0,
-                ),
-                Text(
-                  _username,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 20,
-                      color: Colors.white),
-                ),
-              ],
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(Icons.camera_alt_rounded,
+                                color: Colors.black),
+                            onPressed: () {
+                              // Add functionality to edit the profile image
+                              // For example, show a dialog to pick a new image.
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 12.0,
+                  ),
+                  Text(
+                    _username,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                        color: Colors.white),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 25.0,
-          ),
-          GestureDetector(
-            onTap: () {
-              // when the Personal details is tapped
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => PersonalDetails(),
-              ));
-            },
-            child: const ListTile(
+            const SizedBox(
+              height: 25.0,
+            ),
+            GestureDetector(
+              onTap: () {
+                // when the Personal details is tapped
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => PersonalDetails(),
+                ));
+              },
+              child: const ListTile(
+                tileColor: Color(0xfff4eded),
+                leading: Text(
+                  "Personal Details",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                ),
+                trailing: Icon(Icons.arrow_forward_ios),
+              ),
+            ),
+            const SizedBox(
+              height: 18.0,
+            ),
+            const ListTile(
               tileColor: Color(0xfff4eded),
               leading: Text(
-                "Personal Details",
+                "Language",
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 16,
@@ -103,51 +120,13 @@ class ProfilePage extends StatelessWidget {
               ),
               trailing: Icon(Icons.arrow_forward_ios),
             ),
-          ),
-          const SizedBox(
-            height: 18.0,
-          ),
-          const ListTile(
-            tileColor: Color(0xfff4eded),
-            leading: Text(
-              "Language",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-              ),
+            const SizedBox(
+              height: 18.0,
             ),
-            trailing: Icon(Icons.arrow_forward_ios),
-          ),
-          const SizedBox(
-            height: 18.0,
-          ),
-          const ListTile(
-            tileColor: Color(0xfff4eded),
-            leading: Text(
-              "Notifications",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-              ),
-            ),
-            trailing: Icon(Icons.arrow_forward_ios),
-          ),
-          const SizedBox(
-            height: 18.0,
-          ),
-          GestureDetector(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return LogoutDialog();
-                },
-              );
-            },
-            child: const ListTile(
+            const ListTile(
               tileColor: Color(0xfff4eded),
               leading: Text(
-                "Sign out",
+                "Notifications",
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 16,
@@ -155,8 +134,32 @@ class ProfilePage extends StatelessWidget {
               ),
               trailing: Icon(Icons.arrow_forward_ios),
             ),
-          ),
-        ],
+            const SizedBox(
+              height: 18.0,
+            ),
+            GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return LogoutDialog();
+                  },
+                );
+              },
+              child: const ListTile(
+                tileColor: Color(0xfff4eded),
+                leading: Text(
+                  "Sign out",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                ),
+                trailing: Icon(Icons.arrow_forward_ios),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

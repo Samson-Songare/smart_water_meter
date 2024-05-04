@@ -1,8 +1,10 @@
-import 'dart:ui';
+import 'dart:async';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_water_meter/components/water_usage_chart.dart';
 import 'package:smart_water_meter/models/water_amount.dart';
+
 
 class WeeklyReports extends StatefulWidget {
   const WeeklyReports({Key? key}) : super(key: key);
@@ -12,6 +14,25 @@ class WeeklyReports extends StatefulWidget {
 }
 
 class _WeeklyReportsState extends State<WeeklyReports> {
+  final database=FirebaseDatabase.instance.ref();
+  late StreamSubscription _weeklyStreamSubscription;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _activateListeners();
+  }
+
+
+  void _activateListeners() {
+      _weeklyStreamSubscription=database.child('weeklyWaterReport/Date/').onValue.listen((event) {
+      final Object? weeklyReport=event.snapshot.value;
+      print(weeklyReport);
+
+    });
+  }
+
   //TODO: this is only template delete it later
   final List<WaterAmount> waterAmountList = [
     WaterAmount(day: "MON", amount: 25),
@@ -26,6 +47,7 @@ class _WeeklyReportsState extends State<WeeklyReports> {
   List<WaterAmount> topThree = getTopThreeWaterAmounts();
   @override
   Widget build(BuildContext context) {
+    final weeklyWaterUsage=database.child('weeklyReport/');
     return Scaffold(
         appBar: AppBar(
           title: const Text('Weekly Report'),
@@ -116,7 +138,13 @@ class _WeeklyReportsState extends State<WeeklyReports> {
           ],
         ));
   }
+  @override
+  void deactivate() {
+    _weeklyStreamSubscription.cancel();
+    super.deactivate();
+  }
 }
+
 
 // function that return the top three water usage days in the week
 

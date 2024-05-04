@@ -22,7 +22,7 @@ class _PayBillsPageState extends State<PayBillsPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        child: ListView( children: [
           const SizedBox(height: 40),
           const Text(
             "Payment number",
