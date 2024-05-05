@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../components/confirm_pay_bill_widget.dart';
@@ -5,14 +6,27 @@ import '../components/confirm_pay_bill_widget.dart';
 class PayBillsPage extends StatefulWidget {
   const PayBillsPage({Key? key}) : super(key: key);
 
+
+
   @override
   State<PayBillsPage> createState() => _PayBillsPageState();
 }
 
 class _PayBillsPageState extends State<PayBillsPage> {
-  final double _water_amount = 12;
+  final double _water_units = 12;
+  TextEditingController payment_no_controller=TextEditingController();
+  TextEditingController control_no_controller=TextEditingController();
+  TextEditingController water_amount_controller=TextEditingController();
 
   late String _currency = "TSH";
+
+  Map<double,double> water_units_payment={
+    1000:1,
+    2000:2,
+    3000:3
+  };
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +46,7 @@ class _PayBillsPageState extends State<PayBillsPage> {
             height: 8.0,
           ),
           TextField(
+            controller: payment_no_controller,
             decoration: InputDecoration(
                 hintText: "enter payment number",
                 border: OutlineInputBorder(
@@ -49,6 +64,7 @@ class _PayBillsPageState extends State<PayBillsPage> {
             height: 8.0,
           ),
           TextField(
+            controller: control_no_controller,
             decoration: InputDecoration(
                 hintText: "enter control number",
                 border: OutlineInputBorder(
@@ -58,25 +74,9 @@ class _PayBillsPageState extends State<PayBillsPage> {
           const SizedBox(
             height: 10,
           ),
+
           const Text(
-            "Water Units",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-          ),
-          const SizedBox(
-            height: 8.0,
-          ),
-          TextField(
-            decoration: InputDecoration(
-                hintText: "enter payment number",
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(color: Colors.grey))),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          const Text(
-            "Amount",
+            "Amounts",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
           ),
           const SizedBox(
@@ -87,14 +87,27 @@ class _PayBillsPageState extends State<PayBillsPage> {
               // First text box taking 3/4th of the width
               Expanded(
                 flex: 3,
-                child: TextFormField(
-                  readOnly: true,
-                  initialValue: "$_water_amount",
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
+                child: DropdownButton<String>(
+                  value: _currency, // Default currency is TSH
+                  onChanged: (String? newValue) {
+                    // You can handle currency selection here
+                    setState(() {
+                      _currency = newValue!;
+                    });
+
+                  },
+                  items: <String>[
+                    '1000',
+                    '2000',
+                    '3000',
+                    '4000'
+                  ] // Add more currencies as needed
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
               ),
               const SizedBox(
@@ -133,6 +146,27 @@ class _PayBillsPageState extends State<PayBillsPage> {
               ),
             ],
           ),
+          const SizedBox(
+            height: 10,
+          ),
+          const Text(
+            "Units",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+          ),
+          const SizedBox(
+            height: 8.0,
+          ),
+          TextFormField(
+            controller: water_amount_controller,
+            readOnly: true,
+            initialValue: "$_water_units",
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+
           const SizedBox(
             height: 10,
           ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_water_meter/pages/login_page.dart';
+import 'package:smart_water_meter/authetication/AutheticationRepository.dart';
 import 'package:smart_water_meter/pages/profile/personal_details.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -203,12 +203,8 @@ class LogoutDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            // Perform logout action
-            // For example, you can navigate to the login screen
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => LoginPage(),
-            ));
             // Add your logout logic here
+          AuthenticationRepository.instance.logout();
           },
           child: const Text('Logout'),
         ),

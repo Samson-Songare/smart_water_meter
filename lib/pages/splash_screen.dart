@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:smart_water_meter/constants/colors.dart';
 import 'package:smart_water_meter/pages/welcome_page.dart';
 
@@ -12,9 +13,8 @@ class SplashScreen extends StatelessWidget {
     Timer(
       const Duration(seconds: 5),
       () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => WelcomePage(),
-        ));
+        Get.to(const WelcomePage());
+
       },
     );
     return Scaffold(

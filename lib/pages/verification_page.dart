@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_text_field/pin_code_text_field.dart';
+import 'package:smart_water_meter/authetication/AutheticationRepository.dart';
+import 'package:smart_water_meter/authetication/controllers/otp_controller.dart';
 import 'package:smart_water_meter/pages/home_page.dart';
 
 class VerificationPage extends StatefulWidget {
@@ -11,9 +14,22 @@ class VerificationPage extends StatefulWidget {
 
 class _VerificationPageState extends State<VerificationPage> {
 // variable to hold entered code
-  String _enteredCode = "";
+final controller=Get.put(OTPController());
+final autheticationRepo=Get.put(AuthenticationRepository());
+
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    generateOTP();
+  }
+
+void generateOTP() async {
+ await autheticationRepo.phoneAuthetication();
+}
   @override
   Widget build(BuildContext context) {
+    var otp;
     double screenWidth = MediaQuery.of(context).size.width;
 
     // Calculate the desired image size based on the screen width
@@ -40,7 +56,7 @@ class _VerificationPageState extends State<VerificationPage> {
             height: 8,
           ),
           const Text(
-            "Please enter the 4 digit code sent to 505-287-8051",
+            "Please enter the 4 digit code sent to your registered phone number",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -64,9 +80,8 @@ class _VerificationPageState extends State<VerificationPage> {
             pinBoxWidth: 55,
             pinBoxHeight: 55,
             onTextChanged: (code) {
-              setState(() {
-                _enteredCode = code;
-              });
+             otp=code;
+             controller.verifyOTP(otp);
             },
           ),
           const SizedBox(
@@ -85,10 +100,8 @@ class _VerificationPageState extends State<VerificationPage> {
                 borderRadius: BorderRadius.circular(10),
               )),
               onPressed: () {
-                //TODO: change this latter to verify entered digit codes
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => HomePage(),
-                ));
+                // verify entered digit codes
+                controller.verifyOTP(otp);
               },
               child: const Text(
                 'Confirm',
@@ -102,5 +115,7 @@ class _VerificationPageState extends State<VerificationPage> {
         ]),
       ),
     );
+
+
   }
 }
