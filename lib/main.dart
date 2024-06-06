@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:smart_water_meter/authetication/AutheticationRepository.dart';
 import 'package:smart_water_meter/pages/splash_screen.dart';
@@ -9,6 +11,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
   .then((value) => Get.put(AuthenticationRepository()));
+
+  await dotenv.load(fileName: ".env");
+  Stripe.publishableKey=dotenv.env["STRIPE_PUBLISH_KEY"]!;
+  Stripe.instance.applySettings();
   runApp(const MyApp());
 }
 

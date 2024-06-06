@@ -18,8 +18,9 @@ class LoginController extends GetxController {
   //Call this Function from Design & it will do the rest
   Future<void> login(BuildContext context) async {
     String? error = await AuthenticationRepository.instance.loginWithEmailAndPassword(email.text.trim(), password.text.trim(),context);
-   email.text='';
-   password.text='';
+    email.text='';
+    password.text='';
+
     if(error != null) {
       Get.snackbar('Error', 'Something went Wrong try again',
           snackPosition: SnackPosition.BOTTOM,

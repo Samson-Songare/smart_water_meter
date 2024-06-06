@@ -44,7 +44,7 @@ class AuthenticationRepository extends GetxController {
       if (e.code == 'user-not-found' || e.code == 'wrong-password') {
         // Display snackbar if email or password is incorrect
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Email or password is incorrect'),
           ),
         );
