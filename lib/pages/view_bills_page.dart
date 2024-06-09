@@ -1,13 +1,27 @@
+import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:smart_water_meter/pages/pay_bills_page.dart';
 
 class ViewBillsPage extends StatelessWidget {
-  const ViewBillsPage({Key? key}) : super(key: key);
+   ViewBillsPage({Key? key}) : super(key: key);
   final double totalUnits = 120;
   final double usedUnits = 80;
+     final _auth = FirebaseAuth.instance;
+   DatabaseReference _testRef=FirebaseDatabase.instance.ref().child('bills');
+
+void fetchBills() async{
+    DataSnapshot snapshot = await _testRef.child(_auth.currentUser!.uid).get();
+  //  print(snapshot.value);
+}   
 
   @override
   Widget build(BuildContext context) {
+    // print(_testRef.child(_auth.currentUser!.uid).get());
+    fetchBills();
     final double remainingUnits = totalUnits - usedUnits;
     final double percentageUsed = (usedUnits / totalUnits) * 100;
     double screeWidth = MediaQuery.of(context).size.width;
@@ -79,7 +93,7 @@ class ViewBillsFirstContainer extends StatelessWidget {
         ),
       ),
       child: Column(children: [
-        Text(
+        const Text(
           "YOUR  CURRENT BILL",
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -92,8 +106,8 @@ class ViewBillsFirstContainer extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Expanded(
-              child: const Column(
+            const Expanded(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -171,36 +185,40 @@ class ViewBillsFirstContainer extends StatelessWidget {
 
 class BillsList extends StatelessWidget {
   // Sample data
-  final List<Map<String, dynamic>> dataList = [
-    {'date': '2024-04-10', 'unitsUsed': 50.0, 'amount': 25.0},
-    {'date': '2024-04-11', 'unitsUsed': 60.0, 'amount': 30.0},
-    {'date': '2024-04-12', 'unitsUsed': 55.0, 'amount': 27.5},
-    {'date': '2024-04-10', 'unitsUsed': 50.0, 'amount': 25.0},
-    {'date': '2024-04-11', 'unitsUsed': 60.0, 'amount': 30.0},
-    {'date': '2024-04-12', 'unitsUsed': 55.0, 'amount': 27.5},
-    {'date': '2024-04-10', 'unitsUsed': 50.0, 'amount': 25.0},
-    {'date': '2024-04-11', 'unitsUsed': 60.0, 'amount': 30.0},
-    {'date': '2024-04-12', 'unitsUsed': 55.0, 'amount': 27.5},
-    {'date': '2024-04-10', 'unitsUsed': 50.0, 'amount': 25.0},
-    {'date': '2024-04-11', 'unitsUsed': 60.0, 'amount': 30.0},
-    {'date': '2024-04-12', 'unitsUsed': 55.0, 'amount': 27.5},
-    {'date': '2024-04-10', 'unitsUsed': 50.0, 'amount': 25.0},
-    {'date': '2024-04-11', 'unitsUsed': 60.0, 'amount': 30.0},
-    {'date': '2024-04-12', 'unitsUsed': 55.0, 'amount': 27.5},
+  final List<Map<dynamic, dynamic>> dataList = [
+  
   ];
+
+   final _auth = FirebaseAuth.instance;
+ final   DatabaseReference _testRef=FirebaseDatabase.instance.ref().child('bills');
+     DateTime now = DateTime.now();
+
+Future<DataSnapshot> fetchBills() async{
+  // TODO: add the REALLY DATES
+    return _testRef.child(_auth.currentUser!.uid).child('2024-06-08').get();
+  //  Map<Object?, Object?> rawMap = snapshot.value as Map<Object?, Object?>;
+
+  //  dataList.add(snapshot.value as Map<dynamic, dynamic>);
+
+}   
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: dataList.length,
-        itemBuilder: (BuildContext context, int index) {
-          final Map<String, dynamic> data = dataList[index];
-          final String date = data['date'];
-          final double unitsUsed = data['unitsUsed'];
-          final double amount = data['amount'];
-
-          return Container(
+    return FutureBuilder<DataSnapshot>(
+   future:fetchBills() ,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }else if(snapshot.hasData){
+          Map<Object?, Object?> rawMap = snapshot.data!.value as Map<Object?, Object?>;
+          dataList.add(rawMap);
+        //  print('${dataList[0]} are these');
+          return  Expanded(
+            child: ListView.builder(
+                  itemCount: dataList.length,
+                  itemBuilder: (context, index) {
+                    final item = dataList[index];
+                    return Container(
             margin: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
@@ -214,7 +232,7 @@ class BillsList extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        date,
+                        item['date'],
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
@@ -222,7 +240,7 @@ class BillsList extends StatelessWidget {
                       ),
                       const SizedBox(height: 8.0),
                       Text(
-                        'Total Units: $unitsUsed',
+                        'Total Units: ${item['units']}',
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
@@ -234,7 +252,7 @@ class BillsList extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '\$$amount',
+                        'Tsh. ${item['amount']}',
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
@@ -253,8 +271,14 @@ class BillsList extends StatelessWidget {
               ),
             ),
           );
-        },
-      ),
+                  },
+                ),
+          );
+        } else {
+              return Text('No data available');
+            }
+        
+      },
     );
   }
 }

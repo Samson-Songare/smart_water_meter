@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 const SizedBox(height: 40),
                 const Text(
-                  "Phone",
+                  "Email",
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                 ),
                 const SizedBox(

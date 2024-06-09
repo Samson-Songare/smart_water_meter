@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "840104311904",
+    "firebase_url": "https://final-smart-meter-default-rtdb.firebaseio.com",
+    "project_id": "final-smart-meter",
+    "storage_bucket": "final-smart-meter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:840104311904:android:b46bf420ec08c7137d1705",
+        "android_client_info": {
+          "package_name": "com.example.smart_water_meter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPwEQAg8TJ2slBNmKQcipf9tX-fsjTARs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,11 +1,21 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:smart_water_meter/models/payment_model.dart';
 
 import 'mobile_money_password_bottom_sheet.dart';
 
 class ConfirmPayBillWidget extends StatelessWidget {
-  const ConfirmPayBillWidget({
+   ConfirmPayBillWidget({
     super.key,
+    required this.payment
   });
+
+  PaymentModel payment;
+
+  DatabaseReference _testRef = FirebaseDatabase.instance.ref().child('bills');
+  final _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +54,11 @@ class ConfirmPayBillWidget extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    // Add your 'Yes' button logic here
+                     DateTime now = DateTime.now();
+                        _testRef
+                        .child(_auth.currentUser!.uid)
+                        .child(DateFormat('yyyy-MM-dd').format(now))
+                        .update(payment.toJson());
                     Navigator.of(context).pop();
                     showModalBottomSheet(
                       context: context,

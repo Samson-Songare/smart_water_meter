@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:smart_water_meter/components/water_usage_chart.dart';
+// todo:import 'package:smart_water_meter/components/water_usage_chart.dart';
 import 'package:smart_water_meter/models/water_amount.dart';
 
 
@@ -98,11 +98,11 @@ class _WeeklyReportsState extends State<WeeklyReports> {
             const SizedBox(
               height: 8,
             ),
-            Container(
-              height: 440,
-              width: 200,
-              child: WaterUsageChart(waterAmountList),
-            ),
+            // Container(
+            //   height: 440,
+            //   width: 200,
+            //   child: WaterUsageChart(waterAmountList),
+            // ),
             const SizedBox(
               height: 8,
             ),

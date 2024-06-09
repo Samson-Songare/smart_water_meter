@@ -188,7 +188,7 @@ class HomeContainer extends StatelessWidget {
             break;
           case "View Bills":
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const ViewBillsPage(),
+              builder: (context) =>  ViewBillsPage(),
             ));
             break;
           case "Notifications":
