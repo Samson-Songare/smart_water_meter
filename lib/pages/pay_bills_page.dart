@@ -110,7 +110,7 @@ class _PayBillsPageState extends State<PayBillsPage> {
                     // You can handle currency selection here
                     setState(() {
                       _amount = newValue!;
-                     
+                     water_amount_controller.text=newValue!;
                       print('water_units_controller.text');
                     });
                   },
@@ -182,7 +182,7 @@ class _PayBillsPageState extends State<PayBillsPage> {
           ),
           TextFormField(
             controller: water_units_controller,
-            readOnly: true,
+            // readOnly: true,
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
@@ -229,5 +229,15 @@ class _PayBillsPageState extends State<PayBillsPage> {
         ]),
       ),
     );
+
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    control_no_controller.dispose();
+    payment_no_controller.dispose();
+    water_amount_controller.dispose();
+    water_units_controller.dispose();
   }
 }
