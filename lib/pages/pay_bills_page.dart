@@ -36,6 +36,9 @@ class _PayBillsPageState extends State<PayBillsPage> {
     control_no_controller.text=_randomControlNumber;
   }
 
+
+  
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +48,7 @@ class _PayBillsPageState extends State<PayBillsPage> {
   @override
   Widget build(BuildContext context) {
     water_units_controller.text =
-                          '${double.parse(water_amount_controller.text) / 1570}'; // assumed 1 unit=Tsh 1570
+                          '${double.parse(water_amount_controller.text) / 1000}'; // assumed 1 unit=Tsh 1000
                       
     return Scaffold(
       appBar: AppBar(
@@ -201,11 +204,11 @@ class _PayBillsPageState extends State<PayBillsPage> {
                      DateTime now = DateTime.now();
                     // TODO: add the units really
                     final payment = PaymentModel(
-                        amount: 1000,
+                        amount: double.parse(water_amount_controller.text),
                         controlNo: control_no_controller.text,
                         paymentNo: payment_no_controller.text,
-                        units: 12,
-                        date: DateFormat('yyyy-MM-dd').format(now)
+                        units: double.parse(water_units_controller.text),
+                        date: DateFormat('yyyy-MM-dd HH:mm').format(now)
                         );
                  
                     showModalBottomSheet(

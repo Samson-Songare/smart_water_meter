@@ -6,7 +6,7 @@ import 'package:smart_water_meter/models/payment_model.dart';
 
 import 'mobile_money_password_bottom_sheet.dart';
 
-class ConfirmPayBillWidget extends StatelessWidget {
+class ConfirmPayBillWidget extends StatefulWidget {
    ConfirmPayBillWidget({
     super.key,
     required this.payment
@@ -14,8 +14,48 @@ class ConfirmPayBillWidget extends StatelessWidget {
 
   PaymentModel payment;
 
+  @override
+  State<ConfirmPayBillWidget> createState() => _ConfirmPayBillWidgetState();
+}
+
+class _ConfirmPayBillWidgetState extends State<ConfirmPayBillWidget> {
   DatabaseReference _testRef = FirebaseDatabase.instance.ref().child('bills');
+
   final _auth = FirebaseAuth.instance;
+
+ DatabaseReference _usersData =
+      FirebaseDatabase.instance.ref().child('users').child('mtui');
+
+  double remainingUnit = 0;
+  double total_units_bought=0;
+
+  Map<Object?, Object?> userData = {};
+  Map<Object?, Object?> billlsData = {};
+
+  void fetchUserInfo() async {
+    DataSnapshot snapshot1 = await _usersData.get();
+    userData = snapshot1.value as Map<Object?, Object?>;
+
+      remainingUnit = double.parse(userData['Units'].toString()!);
+   
+    print(remainingUnit);
+
+    // fetching the total_units_bought
+    DataSnapshot snapshot = await _testRef.child('mtui').get();
+    billlsData = snapshot.value as Map<Object?, Object?>;
+    setState(() {
+      total_units_bought=double.parse(billlsData['total_units_bought'].toString());
+// Suggested code may be subject to a license. Learn more: ~LicenseLog:3571129684.
+    });
+    print(total_units_bought);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserInfo();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +96,18 @@ class ConfirmPayBillWidget extends StatelessWidget {
                   onPressed: () {
                      DateTime now = DateTime.now();
                         _testRef
-                        .child(_auth.currentUser!.uid)
-                        .child(DateFormat('yyyy-MM-dd').format(now))
-                        .update(payment.toJson());
+                        .child('mtui')
+                        .child(DateFormat('yyyy-MM-dd HH:mm').format(now))
+                        .update(widget.payment.toJson());
+                    double amount=widget.payment.units!;
+                    // adding the amount of water units billed to the remaining
+                    // units
+                    remainingUnit+=amount;
+                    // updating the total units bought when adding another bill
+                    total_units_bought+=amount;
+                    _usersData.update({'Units':remainingUnit});
+                    _testRef.child('mtui').update({'total_units_bought':total_units_bought});
+                    // closing the bottom sheet
                     Navigator.of(context).pop();
                     showModalBottomSheet(
                       context: context,

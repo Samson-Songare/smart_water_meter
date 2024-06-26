@@ -1,28 +1,64 @@
-import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:smart_water_meter/pages/pay_bills_page.dart';
 
-class ViewBillsPage extends StatelessWidget {
-   ViewBillsPage({Key? key}) : super(key: key);
-  final double totalUnits = 120;
-  final double usedUnits = 80;
-     final _auth = FirebaseAuth.instance;
-   DatabaseReference _testRef=FirebaseDatabase.instance.ref().child('bills');
+class ViewBillsPage extends StatefulWidget {
+  ViewBillsPage({Key? key}) : super(key: key);
 
-void fetchBills() async{
-    DataSnapshot snapshot = await _testRef.child(_auth.currentUser!.uid).get();
-  //  print(snapshot.value);
-}   
+  @override
+  State<ViewBillsPage> createState() => _ViewBillsPageState();
+}
+
+class _ViewBillsPageState extends State<ViewBillsPage> {
+  double totalUnits = 40;
+  double remainingUnits = 20;
+  double usedUnits = 20;
+  Map<Object?, Object?> rawMap = {};
+
+  List<Map<Object?, Object?>> filteredEntries = [];
+  final _auth = FirebaseAuth.instance;
+
+  DatabaseReference _testRef = FirebaseDatabase.instance.ref().child('bills');
+  DatabaseReference _usersData =
+      FirebaseDatabase.instance.ref().child('users').child('mtui');
+
+  DateTime now = DateTime.now();
+
+  void fetchBills() async {
+    DataSnapshot snapshot = await _testRef.child('mtui').get();
+    rawMap = snapshot.value as Map<Object?, Object?>;
+
+    if (rawMap != null) {
+      rawMap.forEach((key, value) {
+        if (key.toString().startsWith('2024')) {
+          Map<Object?, Object?> entry = value as Map<Object?, Object?>;
+          setState(() {
+            filteredEntries.add(entry);
+          });
+        }
+      });
+
+      // getting the total units bought from the begenning
+      setState(
+        (){
+         totalUnits=double.parse(rawMap['total_units_bought'].toString());
+        }
+      );
+    }
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    fetchBills();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // print(_testRef.child(_auth.currentUser!.uid).get());
-    fetchBills();
-    final double remainingUnits = totalUnits - usedUnits;
+    // final double remainingUnits = totalUnits - usedUnits;
     final double percentageUsed = (usedUnits / totalUnits) * 100;
     double screeWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -45,7 +81,9 @@ void fetchBills() async{
           const SizedBox(
             height: 20.0,
           ),
-          BillsList()
+          BillsList(
+            dataList: filteredEntries,
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -63,8 +101,8 @@ void fetchBills() async{
   }
 }
 
-class ViewBillsFirstContainer extends StatelessWidget {
-  const ViewBillsFirstContainer({
+class ViewBillsFirstContainer extends StatefulWidget {
+  ViewBillsFirstContainer({
     super.key,
     required this.screeWidth,
     required this.totalUnits,
@@ -78,13 +116,40 @@ class ViewBillsFirstContainer extends StatelessWidget {
   final double usedUnits;
   final double remainingUnits;
   final double percentageUsed;
+  @override
+  State<ViewBillsFirstContainer> createState() =>
+      _ViewBillsFirstContainerState();
+}
 
+class _ViewBillsFirstContainerState extends State<ViewBillsFirstContainer> {
+  DatabaseReference _usersData =
+      FirebaseDatabase.instance.ref().child('users').child('mtui');
+  double remainingUnit = 0;
+  Map<Object?, Object?> userData = {};
+  void fetchUserInfo() async {
+    DataSnapshot snapshot1 = await _usersData.get();
+    userData = snapshot1.value as Map<Object?, Object?>;
+
+    setState(() {
+      remainingUnit = double.parse(userData['Units'].toString()!);
+    });
+
+    print(remainingUnit);
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    fetchUserInfo();
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 8),
-      width: screeWidth,
-      height: screeWidth * 0.5,
+      width: widget.screeWidth,
+      height: widget.screeWidth * 0.5,
       decoration: const BoxDecoration(
         color: Colors.blue,
         borderRadius: BorderRadius.only(
@@ -139,21 +204,21 @@ class ViewBillsFirstContainer extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$totalUnits Units',
+                    '${widget.totalUnits} Units',
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: Colors.white),
                   ),
                   Text(
-                    '$usedUnits Units',
+                    '${widget.totalUnits- remainingUnit} Units',
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: Colors.white),
                   ),
                   Text(
-                    '$remainingUnits Units',
+                    '${remainingUnit} Units',
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -172,7 +237,7 @@ class ViewBillsFirstContainer extends StatelessWidget {
           child: SizedBox(
             height: 20.0,
             child: LinearProgressIndicator(
-              value: percentageUsed / 100, // Percentage of water used
+              value: (widget.totalUnits-remainingUnit)/widget.totalUnits, // Percentage of water used
               backgroundColor: Colors.grey[300],
               valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
             ),
@@ -185,40 +250,21 @@ class ViewBillsFirstContainer extends StatelessWidget {
 
 class BillsList extends StatelessWidget {
   // Sample data
-  final List<Map<dynamic, dynamic>> dataList = [
-  
-  ];
+  BillsList({super.key, required this.dataList});
 
-   final _auth = FirebaseAuth.instance;
- final   DatabaseReference _testRef=FirebaseDatabase.instance.ref().child('bills');
-     DateTime now = DateTime.now();
+  final List<Map<dynamic, dynamic>> dataList;
 
-Future<DataSnapshot> fetchBills() async{
-  // TODO: add the REALLY DATES
-    return _testRef.child(_auth.currentUser!.uid).child('2024-06-08').get();
-  //  Map<Object?, Object?> rawMap = snapshot.value as Map<Object?, Object?>;
-
-  //  dataList.add(snapshot.value as Map<dynamic, dynamic>);
-
-}   
+  DateTime now = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<DataSnapshot>(
-   future:fetchBills() ,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        }else if(snapshot.hasData){
-          Map<Object?, Object?> rawMap = snapshot.data!.value as Map<Object?, Object?>;
-          dataList.add(rawMap);
-        //  print('${dataList[0]} are these');
-          return  Expanded(
-            child: ListView.builder(
-                  itemCount: dataList.length,
-                  itemBuilder: (context, index) {
-                    final item = dataList[index];
-                    return Container(
+    print('dataList.length: ${dataList.length}');
+    return Expanded(
+      child: ListView.builder(
+        itemCount: dataList.length,
+        itemBuilder: (context, index) {
+          final item = dataList[index];
+          return Container(
             margin: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
@@ -271,14 +317,8 @@ Future<DataSnapshot> fetchBills() async{
               ),
             ),
           );
-                  },
-                ),
-          );
-        } else {
-              return Text('No data available');
-            }
-        
-      },
+        },
+      ),
     );
   }
 }

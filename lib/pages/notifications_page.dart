@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
 
   @override
   State<NotificationPage> createState() => _NotificationPageState();
+
+  static const route='/notification-screen';
 }
 
 class _NotificationPageState extends State<NotificationPage> {
   // Sample notification data
+
+  DatabaseReference _usersData =
+      FirebaseDatabase.instance.ref().child('users').child('mtui');
+      List<Map<Object?, Object?>> filteredEntries = [];
   final List<Map<String, dynamic>> notificationData = [
     {
       'title': 'Notification 1',
@@ -51,8 +58,28 @@ class _NotificationPageState extends State<NotificationPage> {
 // Selected filter option
   String selectedFilter = 'All';
 
+  // method to fetch the occurred notifications
+  void fetchNotifications() async {
+    DataSnapshot snapshot1 = await _usersData.child('tamper_notifications').get();
+    Map<Object?, Object?> userData = snapshot1.value as Map<Object?, Object?>;
+    print(userData);
+   
+    if(userData!=null){
+      filteredEntries.clear();
+      filteredEntries.add(userData);
+    }
+   
+  }
+
+@override
+  void initState() {
+    super.initState();
+    fetchNotifications();
+  }
   @override
   Widget build(BuildContext context) {
+    // for notifications
+    fetchNotifications();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifications'),
@@ -86,13 +113,13 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: notificationData.length,
+              itemCount: filteredEntries.length,
               itemBuilder: (BuildContext context, int index) {
-                final Map<String, dynamic> notification =
-                    notificationData[index];
-                final String title = notification['title'];
-                final String description = notification['description'];
-                final String time = notification['time'];
+                final Map<Object?, dynamic> notification =
+                    filteredEntries[index];
+                final String title = 'Warning';
+                final String description = notification['message'];
+                // final String time = notification['time'];
                 // final String date = notification['date'];
 
                 return Container(
@@ -104,12 +131,12 @@ class _NotificationPageState extends State<NotificationPage> {
                   child: ListTile(
                     leading: const Icon(Icons.notification_important),
                     title: Text(
-                      title,
+                      'title',
                       style: const TextStyle(
                           color: Colors.black, fontWeight: FontWeight.w500),
                     ),
                     subtitle: Text(description),
-                    trailing: Text(time),
+                    trailing: Text('time'),
                   ),
                 );
               },

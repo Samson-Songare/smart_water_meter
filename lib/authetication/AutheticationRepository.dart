@@ -37,28 +37,45 @@ class AuthenticationRepository extends GetxController {
 
 
 
-  Future<String?> loginWithEmailAndPassword(String email, String password,BuildContext context) async {
-    try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-        // Display snackbar if email or password is incorrect
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Email or password is incorrect'),
-          ),
-        );
-      }
-    } catch (_) {
-    }
+ Future<String?> loginWithEmailAndPassword(String email, String password, BuildContext context) async {
+  try {
+    await _auth.signInWithEmailAndPassword(email: email, password: password);
+    // Login successful, return null
     return null;
+  } on FirebaseAuthException catch (e) {
+    String errorMessage;
+    if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+      errorMessage = 'Email or password is incorrect';
+    } else {
+      errorMessage = 'An error occurred, please try again';
+    }
+    // Display snackbar if there is an error
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errorMessage),
+      ),
+    );
+    // Return the error message
+    return errorMessage;
+  } catch (_) {
+    // Handle any other type of error
+    const String errorMessage = 'An unknown error occurred';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errorMessage),
+      ),
+    );
+    // Return the error message
+    return errorMessage;
   }
+}
+
 
   Future<void> phoneAuthetication() async {
-  final phoneData=await  _testRef.child(_auth.currentUser!.uid).child('0784901461').get();
-  String phone=phoneData.value.toString();
+  // final phoneData=await  _testRef.child(_auth.currentUser!.uid).child('+255784901461').get();
+  // String phone=phoneData.value.toString();
   await  _auth.verifyPhoneNumber(
-        phoneNumber: phone,
+        phoneNumber: '+255658581495',
         verificationCompleted: (credential) async {
           await _auth.signInWithCredential(credential);
         },
@@ -69,7 +86,8 @@ class AuthenticationRepository extends GetxController {
           this.verificationId.value=verificationId;
         },
         verificationFailed: (e){
-          Get.snackbar('Error', 'Something went wrong try again');
+          Get.snackbar('Error', '${e.message}');
+          print('${e.message}');
         },
     );
   }

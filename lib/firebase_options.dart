@@ -48,6 +48,7 @@ class DefaultFirebaseOptions {
     authDomain: 'final-smart-meter.firebaseapp.com',
     databaseURL: 'https://final-smart-meter-default-rtdb.firebaseio.com',
     storageBucket: 'final-smart-meter.appspot.com',
+    measurementId: 'G-4YEE724T08',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -87,5 +88,7 @@ class DefaultFirebaseOptions {
     authDomain: 'final-smart-meter.firebaseapp.com',
     databaseURL: 'https://final-smart-meter-default-rtdb.firebaseio.com',
     storageBucket: 'final-smart-meter.appspot.com',
+    measurementId: 'G-4YEE724T08',
   );
+
 }

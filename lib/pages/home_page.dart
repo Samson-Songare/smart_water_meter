@@ -1,5 +1,5 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 import 'package:smart_water_meter/pages/notifications_page.dart';
 import 'package:smart_water_meter/pages/profile/profile_page.dart';
 import 'package:smart_water_meter/pages/submit_complains_page.dart';
@@ -14,26 +14,59 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late ValueNotifier<double> valueNotifier;
+ 
 
   final progressBarCenterTextStyle = const TextStyle(
     fontSize: 40,
     color: Colors.white,
     fontWeight: FontWeight.bold,
   );
+  //fetch data of the user 
+  DatabaseReference _usersData =
+      FirebaseDatabase.instance.ref().child('users').child('mtui');
+  double remainingUnit = 10;
+  Map<Object?, Object?> userData = {};
+  Map<Object?, Object?> rawMap = {};
+  DatabaseReference _testRef = FirebaseDatabase.instance.ref().child('bills');
+   double totalUnits =20;
+  //function to fetch the user data
+ void fetchUserInfo() async {
+    DataSnapshot snapshot1 = await _usersData.get();
+    userData = snapshot1.value as Map<Object?, Object?>;
+
+    setState(() {
+      remainingUnit = double.parse(userData['Units'].toString()!);
+    });
+
+    print(remainingUnit);
+
+//fetching the total units for the bills 
+      DataSnapshot snapshot = await _testRef.child('mtui').get();
+    rawMap = snapshot.value as Map<Object?, Object?>;
+    // getting the total units bought from the begenning
+      setState(
+        (){
+         totalUnits=double.parse(rawMap['total_units_bought'].toString());
+        }
+      );
+
+  }
 
   @override
   void initState() {
     super.initState();
-    // initialize the value notifier
-    // TODO: change this value using data passed to it
-    valueNotifier = ValueNotifier(75.0);
+   fetchUserInfo();
   }
 
   @override
   Widget build(BuildContext context) {
     // screen width
+    fetchUserInfo();
     double screeWidth = MediaQuery.of(context).size.width;
+    totalUnits=double.parse(rawMap['total_units_bought'].toString());
+     remainingUnit = double.parse(userData['Units'].toString()!);
+     final double  totalUnit=totalUnits;
+    final double  percent =(totalUnits-remainingUnit)*100/totalUnits;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight + 1),
@@ -47,11 +80,11 @@ class _HomePageState extends State<HomePage> {
           title: const Column(
             children: [
               Text(
-                "Good Afternoon , Samson",
+                "Good Afternoon , Mtui",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
               Text(
-                "Meter No:  4512780512",
+                "Meter Id:  003-mtui",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ],
@@ -92,31 +125,21 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  const Text(
-                    "120 Units",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white),
-                  ),
-                  SimpleCircularProgressBar(
-                    size: 120,
-                    valueNotifier: valueNotifier,
-                    progressStrokeWidth: 24,
-                    backStrokeWidth: 24,
-                    mergeMode: true,
-                    onGetText: (value) {
-                      return Text(
-                        '${value.toInt()}%',
-                        style: progressBarCenterTextStyle,
-                      );
-                    },
-                    progressColors: const [Colors.green],
-                    backColor: Colors.white,
+                 
+                  SizedBox(
+                    width: 100.0, // Set the width here
+                    height: 100.0,
+                    child: CircularProgressIndicator(
+                      value:
+                          (totalUnits-remainingUnit)/totalUnits, // Set the progress value here (between 0.0 and 1.0)
+                      strokeWidth: 25.0,
+                      backgroundColor: Colors.grey[200],
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                    ),
                   ),
                   //
-                  const Text(
-                    " Used Up Until :13th February, 2021",
+                   Text(
+                    ' Used Up : ${percent.round()} %',
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -188,7 +211,7 @@ class HomeContainer extends StatelessWidget {
             break;
           case "View Bills":
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) =>  ViewBillsPage(),
+              builder: (context) => ViewBillsPage(),
             ));
             break;
           case "Notifications":

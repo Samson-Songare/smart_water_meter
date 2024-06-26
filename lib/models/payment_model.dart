@@ -2,7 +2,7 @@ class PaymentModel {
   String? paymentNo;
   String? controlNo;
   double? amount;
-  int? units;
+  double? units;
   String? date;
 
   PaymentModel({
